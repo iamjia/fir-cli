@@ -44,7 +44,7 @@ module FIR
     method_option :proj,          type: :string,  aliases: '-P', desc: 'Project id in BugHD.com if upload app mapping file'
     method_option :open,          type: :boolean, desc: 'true/false if open for everyone'
     method_option :password,      type: :string,  desc: 'Set password for app'
-    method_option :content,       type: :string,  aliases: '-ct', desc: 'Set Dtalk robot message'
+
     def build_ipa(*args)
       prepare :build_ipa
 
@@ -76,7 +76,7 @@ module FIR
     method_option :qrcode,    type: :boolean, aliases: '-Q', desc: 'Generate qrcode'
     method_option :open,      type: :boolean, desc: 'true/false if open for everyone, the default is: true', default: true
     method_option :password,  type: :string,  desc: 'Set password for app'
-    method_option :content,   type: :string,  aliases: '-ct', desc: 'Set Dtalk robot message'
+
     def build_apk(*args)
       prepare :build_apk
 
@@ -116,19 +116,22 @@ module FIR
 
     method_option :open,        type: :boolean, desc: 'true/false if open for everyone'
     method_option :password,    type: :string,  desc: 'Set password for app'
-    method_option :content,     type: :string,  aliases: '-ct', desc: 'Set Dtalk robot message'
-    map 'dt' => :dingtalk
-    
-    def dingtalk(*args)
-      prepare :dingtalk
-
-      FIR.dingtalk(*args, options)
-    end
 
     def publish(*args)
       prepare :publish
 
       FIR.publish(*args, options)
+    end
+
+    desc 'dtalk', 'dtalk robot'
+    map 'dt' => :dingtalk
+    method_option :dingtalk_robot_msg,     type: :string,  aliases: '-M', desc: 'Set Dtalk robot message'
+    method_option :dingtalk_access_token, type: :string, aliases: '-D', desc: 'Send msg to dingtalk, only need access_token, not whole url'
+
+    def dingtalk(*args)
+      prepare :dingtalk
+
+      FIR.dingtalk(*args, options)
     end
 
     desc 'login', 'Login fir.im (aliases: `l`).'

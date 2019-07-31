@@ -2,17 +2,17 @@
 module FIR
   module Publish
     def dingtalk(*args, options)
-      initialize_dtalk_options
-      if @token
+      if options[:dingtalk_access_token]
         payload = {
           "msgtype": 'markdown',
           "markdown": {
             "title": "ceshi",
-            "text": @content
+            "text": options[:dingtalk_robot_msg]
           }
         }
-        url = "https://oapi.dingtalk.com/robot/send?access_token=#{@token}"
+        url = "https://oapi.dingtalk.com/robot/send?access_token=#{options[:dingtalk_access_token]}"
         DefaultRest.post(url, payload)
+      end
     end
 
     def initialize_dtalk_options(args, options)

@@ -1,6 +1,25 @@
 # frozen_string_literal: true
 module FIR
   module Publish
+    def dingtalk(*args, options)
+      initialize_dtalk_options
+      if @token
+        payload = {
+          "msgtype": 'markdown',
+          "markdown": {
+            "title": "ceshi",
+            "text": @content
+          }
+        }
+        url = "https://oapi.dingtalk.com/robot/send?access_token=#{@token}"
+        DefaultRest.post(url, payload)
+    end
+
+    def initialize_dtalk_options(args, options)
+        @token         = options[:token] || current_token
+        @content       = options[:content].to_s
+    end
+
     def publish(*args, options)
       initialize_publish_options(args, options)
       check_supported_file_and_token
@@ -36,7 +55,8 @@ module FIR
     def upload_app
       @icon_cert   = @uploading_info[:cert][:icon]
       @binary_cert = @uploading_info[:cert][:binary]
-
+     
+      fetch_release_info
       upload_app_icon unless @app_info[:icons].blank?
       @app_uploaded_callback_data = upload_app_binary
       logger.info "App id is #{@app_id}"
@@ -44,6 +64,7 @@ module FIR
       upload_device_info
       update_app_info
       fetch_app_info
+      update_release_info
     end
 
     %w[binary icon].each do |word|
@@ -163,6 +184,25 @@ module FIR
       @fir_app_info = get(fir_api[:app_url] + "/#{@app_id}", api_token: @token)
       write_app_info(id: @fir_app_info[:id], short: @fir_app_info[:short], name: @fir_app_info[:name])
       @fir_app_info
+    end
+
+
+    def fetch_release_info
+      logger.info 'Fetch release info from fir.im'
+
+      release_info = get(fir_api[:app_url] + "/#{@app_id}" + "/releases", api_token: @token, page: 1)
+      if release_info[:datas].count > 0
+        @release_id = release_info[:datas][0][:id]
+      end
+
+    end
+
+        def update_release_info
+      logger.info "Update release" ":#{@release_id}" + " info from fir.im"
+
+      if nil != @release_id
+        patch fir_api[:app_url] + "/#{@app_id}" + "/releases" + "/#{@release_id}", api_token: @token, is_history: true
+      end
     end
 
     def upload_mapping_file_with_publish(options)

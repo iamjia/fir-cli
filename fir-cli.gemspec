@@ -5,14 +5,14 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'fir/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'fir-cli'
+  spec.name          = 'fir-cli-xsl'
   spec.version       = FIR::VERSION
   spec.authors       = ['NaixSpirit', 'atpking']
   spec.email         = ['atpking@gmail.com']
   spec.date          = Time.now.strftime('%Y-%m-%d')
   spec.summary       = 'fir.im command tool'
   spec.description   = 'fir.im command tool, support iOS and Android'
-  spec.homepage      = 'https://github.com/FIRHQ/fir-cli'
+  spec.homepage      = 'https://github.com/iamjia/fir-cli'
   spec.license       = 'MIT'
   spec.files         = `git ls-files -z`.split("\x0")
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
@@ -33,8 +33,9 @@ Gem::Specification.new do |spec|
   - (1.6.13) 上传图标逻辑修改
   - (1.6.12) 修复了部分机器没有默认安装 byebug 的问题
   - (1.6.11) 变化了 ruby gem 仓库地址
-  - [fir-cli](https://github.com/firhq/fir-cli) 已经开源
+  - [fir-cli](https://github.com/iamjia/fir-cli) 已经开源
   - 欢迎 fork, issue 和 pull request
+  - xiangshaolong 专用
   )
 
   spec.add_development_dependency 'bundler'

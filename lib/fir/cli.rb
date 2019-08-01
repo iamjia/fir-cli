@@ -116,6 +116,7 @@ module FIR
 
     method_option :open,        type: :boolean, desc: 'true/false if open for everyone'
     method_option :password,    type: :string,  desc: 'Set password for app'
+    method_option :dingtalk_notify,    type: :boolean, aliases: '-dn', desc: 'enable dingtalk robot notify', default: true
 
     def publish(*args)
       prepare :publish

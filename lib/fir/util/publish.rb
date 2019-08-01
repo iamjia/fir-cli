@@ -36,7 +36,11 @@ module FIR
       logger_info_dividing_line
       logger_info_app_short_and_qrcode(options)
 
-      dingtalk_notifier(options)
+      # logger.info ">>>> #{options[:dingtalk_notify]}"
+      if options[:dingtalk_notify]
+        dingtalk_notifier(options)  
+      end
+      
       upload_mapping_file_with_publish(options)
       logger_info_blank_line
       clean_files
@@ -236,12 +240,12 @@ module FIR
 
     def dingtalk_notifier(options)
       if options[:dingtalk_access_token]
-        title = "#{@app_info[:name]}-#{@app_info[:version]}(Build #{@app_info[:build]})"
+        title = "#{@app_info[:name]}"
         payload = {
           "msgtype": 'markdown',
           "markdown": {
-            "title": "#{title} uploaded",
-            "text": "#{title} uploaded at #{Time.now}\nurl: #{@download_url}\n ![app二维码](data:image/png;base64,#{Base64.strict_encode64(File.read(open(@qrcode_path)))})"
+            "title": "#{title}",
+            "text": "#{title}\n \n版本: #{@app_info[:build]}\n \n更新时间: #{Time.now}\n \n下载链接: [#{@download_url}](#{@download_url})\n  \n更新内容: #{@changelog}"
           }
         }
         url = "https://oapi.dingtalk.com/robot/send?access_token=#{options[:dingtalk_access_token]}"

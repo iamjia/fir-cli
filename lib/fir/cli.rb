@@ -117,6 +117,7 @@ module FIR
     method_option :open,        type: :boolean, desc: 'true/false if open for everyone'
     method_option :password,    type: :string,  desc: 'Set password for app'
     method_option :dingtalk_notify,    type: :boolean, aliases: '-dn', desc: 'enable dingtalk robot notify', default: true
+    method_option :delete_latest_version, type: :boolean, aliases: '-dlv', desc: '删除上一个版本'
 
     def publish(*args)
       prepare :publish
@@ -134,6 +135,12 @@ module FIR
 
       FIR.dingtalk(*args, options)
     end
+
+    # desc 'turn_off_history', 'turn off history fir.im (aliases: `toh`).'
+    # def turn_off_history
+    #   prepare :turn_off_history
+    #   FIR.turn_off_history(options)
+    # end
 
     desc 'login', 'Login fir.im (aliases: `l`).'
     map 'l' => :login

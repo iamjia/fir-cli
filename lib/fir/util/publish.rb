@@ -15,6 +15,59 @@ module FIR
       end
     end
 
+    def turn_off_history
+      # @file_type     = "ipa"
+      # @token         = options[:token] || current_token
+      # # @app_info = {"type": 'ipa', "identifier": 'com.sudiyi.appCourier', "name":'速递易快递', "version":'3.1.1', "build": 'haha'}
+      # # @user_info      = fetch_user_info(@token)
+      # # logger.info ">>>> #{@user_info}"
+      # # @uploading_info = fetch_uploading_info
+      # # logger.info ">>>> uploading_info #{@uploading_info}"
+      # @app_id         = '5be4f90f959d69333dd5ab5a'
+
+      release_info = get(fir_api[:app_url] + "/#{@app_id}" + "/releases", api_token: @token, page: 1)
+      
+      logger.info ">>>> #{@release_info}"
+
+      for temp_obj in release_info[:datas]
+        logger.info ">>>> #{@release_info}"
+        temp_id = temp_obj[:id]
+        patch fir_api[:app_url] + "/#{@app_id}" + "/releases" + "/#{temp_id}", api_token: @token, is_history: false
+      end
+    end
+
+    def delete_latest_version
+      # @file_type     = "ipa"
+      # @token         = options[:token] || current_token
+      # # @app_info = {"type": 'ipa', "identifier": 'com.sudiyi.appCourier', "name":'速递易快递', "version":'3.1.1', "build": 'haha'}
+      # # @user_info      = fetch_user_info(@token)
+      # # logger.info ">>>> #{@user_info}"
+      # # @uploading_info = fetch_uploading_info
+      # # logger.info ">>>> uploading_info #{@uploading_info}"
+      # @app_id         = '5be4f90f959d69333dd5ab5a'
+
+      logger.info ">>>> app_info #{@app_info}"
+      current_version = @app_info[:version]
+      current_build = @app_info[:build]
+
+      logger.info ">>>> current_version #{current_version}"
+      release_info = get(fir_api[:app_url] + "/#{@app_id}" + "/releases", api_token: @token, page: 1)
+      for temp_obj in release_info[:datas]
+        logger.info ">>>> current_build #{current_build} #{temp_obj[:build]}"
+        if temp_obj[:build] == current_build
+          next
+        end
+
+        if temp_obj[:version] == current_version
+          temp_id = temp_obj[:id]
+          api = fir_api[:app_url] + "/#{@app_id}" + "/releases" + "/#{temp_id}"
+          logger.info ">>>> app_info #{api} #{@token}"
+
+          delete fir_api[:app_url] + "/#{@app_id}" + "/releases" + "/#{temp_id}", access_token: 'c0f6dc8a7d7704d919cbc5d69e6cb2852d1783a1c9'
+        end
+      end
+    end
+
     def initialize_dtalk_options(args, options)
         @token         = options[:token] || current_token
         @content       = options[:content].to_s
@@ -25,14 +78,16 @@ module FIR
       check_supported_file_and_token
 
       logger_info_publishing_message
-
       @app_info = send("#{@file_type}_info", @file_path, full_info: true)
       @user_info      = fetch_user_info(@token)
       @uploading_info = fetch_uploading_info
       @app_id         = @uploading_info[:id]
 
+      # if options[:delete_latest_version]
       upload_app
-
+      delete_latest_version
+      # turn_off_history
+      
       logger_info_dividing_line
       logger_info_app_short_and_qrcode(options)
 
@@ -207,6 +262,8 @@ module FIR
       if nil != @release_id
         patch fir_api[:app_url] + "/#{@app_id}" + "/releases" + "/#{@release_id}", api_token: @token, is_history: true
       end
+
+
     end
 
     def upload_mapping_file_with_publish(options)
